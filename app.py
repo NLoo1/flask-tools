@@ -31,14 +31,12 @@ def submit():
     else:
         redirect("/questions" + int(question_num))
 
-
 # Display first question after posting from root
 @app.route("/questions/<num>", methods=["POST"])
 def get_question(num):
         if question_num >= len(surveys.get("satisfaction").questions):
             flash("Thank you for your response.")
             return redirect("/thankyou")
-        # question_num = int(num)+1
         else:
             return helper(question_num)
 
@@ -54,7 +52,7 @@ def add_response():
     question_num = question_num+1
     return redirect("/questions/" + str(question_num))
 
-# 
+# Displays next question. Should be accessed after redirection to /answer
 @app.route("/questions/<num>")
 def next_question(num):
     global question_num
@@ -75,24 +73,3 @@ def next_question(num):
 def show_thanks():
     return render_template("thankyou.html")
 
-# @app.route("/questions/<int:num>")
-# def show_question(num):
-    # try:
-    #     title = surveys.get("satisfaction").title
-    #     question = surveys.get("satisfaction").questions[num].question
-    #     return render_template("questions.html", num=num, title=title, question=question)
-    # except IndexError:
-    #     raise
-
-# @app.route("/answer", methods=["POST"])
-# def redr():
-#     responses.append(request)
-#     print(responses)
-#     return "WOW!!"
-
-# @app.route("/answer", methods=["POST"])
-# def add_answer():
-#     print(request)
-#     print("THIS IS A REUQUEST")
-#     responses.append(request)
-#     return render_template("answer.html")
