@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, redirect, flash, jsonify
-
+from flask import session
 from flask_debugtoolbar import DebugToolbarExtension
 
 from surveys import *
@@ -10,7 +10,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
 
-responses = []
+# responses = []
 question_num = 0
 
 def helper(num):
@@ -23,17 +23,10 @@ def home():
     survey = surveys.get("satisfaction")
     return render_template("home.html", title=survey.title, instructions=survey.instructions)
 
-@app.route("/", methods=["POST"])
-def submit():
-    if question_num >= len(surveys.get("satisfaction").questions):
-        flash("Thank you for your response.")
-        redirect("/thankyou")
-    else:
-        redirect("/questions" + int(question_num))
-
 # Display first question after posting from root
-@app.route("/questions/<num>", methods=["POST"])
-def get_question(num):
+@app.route("/questions/0", methods=["POST"])
+def get_question():
+        session["responses"] = []
         if question_num >= len(surveys.get("satisfaction").questions):
             flash("Thank you for your response.")
             return redirect("/thankyou")
@@ -41,14 +34,12 @@ def get_question(num):
             return helper(question_num)
 
 # From a submitted response, go to answer and append response. Then, redirect to next question        
-@app.route("/answer", methods=["POST"])
+@app.route("/answer")
 def add_response():
-    global responses
-    data=request.form
-    for key in data.items():
-        responses.append(key)
+    # global responses
+    data=list(request.args.items())
+    session["responses"].append(data[0][0])
     global question_num
-    # Now that the response is appended, increase question_num by 1. This means that after the first question, question_num should be 1 for the second question
     question_num = question_num+1
     return redirect("/questions/" + str(question_num))
 
@@ -66,10 +57,12 @@ def next_question(num):
         try:
            return helper(num)   
         except:
-            global responses
+            # global responses
             question_num = 1000000
             return redirect("/thankyou")        
 @app.route("/thankyou")
 def show_thanks():
+    raise
+    # print(session["responses"])
     return render_template("thankyou.html")
 
