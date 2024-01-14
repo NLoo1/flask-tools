@@ -9,7 +9,7 @@
 <form action="/answer">
     <h1>{{question}}</h1>
     {% for choice in choices %}
-        <input type="radio" name="{{choice}}" id="">{{choice}}
+        <input type="radio" name="{{choice}}" id="" required>{{choice}}
     {% endfor %}
     <input type="submit" value="Submit">
 </form>
